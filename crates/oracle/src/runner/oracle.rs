@@ -9,13 +9,14 @@ use crate::{
 use epoch_encoding::{BlockPtr, Encoder, Message, CURRENT_ENCODING_VERSION};
 use std::{cmp::Ordering, collections::BTreeMap};
 use tracing::{debug, error, info, warn};
+use web3::{transports::Http, Web3};
 
 /// The main application in-memory state.
 pub struct Oracle {
     config: Config,
     protocol_chain: JrpcProviderForChain<JrpcExpBackoff>,
     indexed_chains: Vec<JrpcProviderForChain<JrpcExpBackoff>>,
-    contracts: Contracts<JrpcExpBackoff>,
+    contracts: Contracts<Http>,
 }
 
 impl Oracle {
@@ -23,7 +24,7 @@ impl Oracle {
         let protocol_chain = protocol_chain(&config);
         let indexed_chains = indexed_chains(&config);
         let contracts = Contracts::new(
-            protocol_chain.web3.clone(),
+            contracts_web3(&config),
             config.data_edge_address,
             config.epoch_manager_address,
             config.transaction_monitoring_options,
@@ -297,6 +298,13 @@ fn protocol_chain(config: &Config) -> JrpcProviderForChain<JrpcExpBackoff> {
         config.retry_strategy_max_wait_time,
     );
     JrpcProviderForChain::new(config.protocol_chain.id.clone(), transport)
+}
+
+fn contracts_web3(config: &Config) -> Web3<Http> {
+    // Unwrap/Expect: the URL string value we pass to Http::new will be parsed into an URL again.
+    // Since that value already comes from a parsed (and thus, valid) URL, we can assume it won't panic.
+    let transport = Http::new(config.protocol_chain.jrpc_url.as_str()).expect("URL to be valid");
+    Web3::new(transport)
 }
 
 fn indexed_chains(config: &Config) -> Vec<JrpcProviderForChain<JrpcExpBackoff>> {
