@@ -64,7 +64,7 @@ document.getElementById('verify-compiled').oninput = function () {
 	let expected = (<HTMLInputElement>document.getElementById('verify-compiled')).value;
 
 	let text;
-	if (compiled === expected) {
+	if (compiled === expected || `0x${compiled}` === expected) {
 		text = '✓ matches'
 	} else {
 		text = '✗ does not match'
