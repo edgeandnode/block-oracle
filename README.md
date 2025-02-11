@@ -1,6 +1,6 @@
 # Epoch Block Oracle
 
-![GitHub](https://img.shields.io/github/license/graphprotocol/block-oracle)
+[![GitHub](https://img.shields.io/github/license/graphprotocol/block-oracle)](https://github.com/graphprotocol/block-oracle/blob/main/LICENSE.txt)
 ![GitHub branch checks state](https://img.shields.io/github/checks-status/graphprotocol/block-oracle/main)
 
 ## Overview
